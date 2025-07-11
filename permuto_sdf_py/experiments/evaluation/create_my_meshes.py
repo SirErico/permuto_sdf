@@ -134,6 +134,7 @@ def run():
     model_bg.train(False)
 
     scenes_list=list_scenes.datasets[args.dataset]
+    scenes_list = ["dtu_scan24"]
     
     for scan_name in scenes_list:
 

@@ -222,7 +222,7 @@ def run():
     results_path=os.path.join(permuto_sdf_root, "results")
     os.makedirs(results_path, exist_ok=True)
     # ckpts
-    checkpoint_path=os.path.join(permuto_sdf_root, "checkpoints/serial_train")
+    checkpoint_path=os.path.join(permuto_sdf_root, "checkpoints/permuto_sdf_dtu_scan24_default/200000")
 
 
     #####PARAMETERS#######

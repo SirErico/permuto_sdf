@@ -22,7 +22,7 @@ ckpts={
     },
 
     "dtu_with_mask_False":{
-        "dtu_scan24": "serial_train/full_dtu_dtu_scan24_with_mask_False_robo3/200000",
+        "dtu_scan24": "permuto_sdf_dtu_scan24_default/200000",
         "dtu_scan37": "serial_train/full_dtu_dtu_scan37_with_mask_False_robo3/200000",
         "dtu_scan40": "serial_train/full_dtu_dtu_scan40_with_mask_False_robo3/200000",
         "dtu_scan55": "serial_train/full_dtu_dtu_scan55_with_mask_False_robo3/200000",
@@ -36,7 +36,7 @@ ckpts={
         "dtu_scan110": "serial_train/full_dtu_dtu_scan110_with_mask_False_robo3/200000",
         "dtu_scan114": "serial_train/full_dtu_dtu_scan114_with_mask_False_robo3/200000",
         "dtu_scan118": "serial_train/full_dtu_dtu_scan118_with_mask_False_robo3/200000",
-        "dtu_scan122": "serial_train/full_dtu_dtu_scan122_with_mask_False_robo3/200000"
+        "dtu_scan122": "ls"
     },
     
 
