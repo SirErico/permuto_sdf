@@ -499,6 +499,24 @@ def create_dataloader(config_path, dataset_name, scene_name, low_res, comp_name,
         if scene_name:
             loader_test.set_restrict_to_scene_name(scene_name)
         loader_test.start()
+    elif dataset_name=="custom":
+        loader_train = DataLoaderEasyPBR(config_path)
+        loader_train.set_mode_train()
+        loader_train.set_limit_to_nr_imgs(-1)
+        loader_train.set_load_mask(with_mask)
+        loader_train.set_dataset_path(os.path.join(data_path, "custom_lego"))
+        if low_res:
+            loader_train.set_subsample_factor(4)
+        loader_train.start()
+
+        loader_test = DataLoaderEasyPBR(config_path)
+        loader_test.set_mode_test()
+        loader_test.set_limit_to_nr_imgs(10)
+        loader_test.set_load_mask(with_mask)
+        loader_test.set_dataset_path(os.path.join(data_path, "custom_lego"))
+        if low_res:
+            loader_test.set_subsample_factor(4)
+        loader_test.start()
     else:
         print("UNKOWN datasetname in create_dataloader")
         exit(1)

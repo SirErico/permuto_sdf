@@ -46,6 +46,7 @@ from permuto_sdf_py.train_permuto_sdf import HyperParamsPermutoSDF
 import permuto_sdf_py.paths.list_of_checkpoints as list_chkpts
 import permuto_sdf_py.paths.list_of_training_scenes as list_scenes
 
+from permuto_sdf_py.utils.nerf_json_loader import NeRFJsonLoader
 
 
 config_file="train_permuto_sdf.cfg"
@@ -133,35 +134,58 @@ def run():
     model_rgb.train(False)
     model_bg.train(False)
 
-    scenes_list=list_scenes.datasets[args.dataset]
-    scenes_list = ["dtu_scan24"]
+    # scenes_list=list_scenes.datasets[args.dataset]
+    # # scenes_list = ["dtu_scan24"]
+    # scenes_list = ["custom_lego"]
     
-    for scan_name in scenes_list:
+    # for scan_name in scenes_list:
 
-        loader, _= create_dataloader(config_path, args.dataset, scan_name, low_res, args.comp_name, args.with_mask)
+    #     loader, _= create_dataloader(config_path, args.dataset, scan_name, low_res, args.comp_name, args.with_mask)
 
-        print("extracting mesh for scene_name", scan_name)
+    #     print("extracting mesh for scene_name", scan_name)
 
-        #get the list of checkpoints
-        config_training="with_mask_"+str(args.with_mask) 
-        scene_config=args.dataset+"_"+config_training
-        ckpts=list_chkpts.ckpts[scene_config]
-        ckpt_for_scene=ckpts[scan_name]
-        ckpt_path_full=os.path.join(checkpoint_path,ckpt_for_scene,"models")
-        print("ckpt_path_full", ckpt_path_full)
-        #load
-        load_from_checkpoint(ckpt_path_full, model_sdf, model_rgb, model_bg, occupancy_grid)        
+    #     #get the list of checkpoints
+    #     config_training="with_mask_"+str(args.with_mask) 
+    #     scene_config=args.dataset+"_"+config_training
+    #     ckpts=list_chkpts.ckpts[scene_config]
+    #     ckpt_for_scene=ckpts[scan_name]
+    #     ckpt_path_full=os.path.join(checkpoint_path,ckpt_for_scene,"models")
+    #     print("ckpt_path_full", ckpt_path_full)
+    #     #load
+    #     load_from_checkpoint(ckpt_path_full, model_sdf, model_rgb, model_bg, occupancy_grid)        
 
-        #extract my mesh
-        extracted_mesh=extract_mesh_and_transform_to_original_tf(model_sdf, nr_points_per_dim, loader, aabb)
+    #     #extract my mesh
+    #     extracted_mesh=extract_mesh_and_transform_to_original_tf(model_sdf, nr_points_per_dim, loader, aabb)
         
-        #output path
-        out_mesh_path=os.path.join(permuto_sdf_root,"results/output_permuto_sdf_meshes",args.dataset, config_training)
-        os.makedirs(out_mesh_path, exist_ok=True)
+    #     #output path
+    #     out_mesh_path=os.path.join(permuto_sdf_root,"results/output_permuto_sdf_meshes",args.dataset, config_training)
+    #     os.makedirs(out_mesh_path, exist_ok=True)
 
-        # #write my mesh
-        extracted_mesh.save_to_file(os.path.join(out_mesh_path, scan_name+".ply") )
+    #     # #write my mesh
+    #     extracted_mesh.save_to_file(os.path.join(out_mesh_path, scan_name+".ply") )
 
+    # --- CUSTOM CHECKPOINT LOGIC ---
+    scan_name = "custom_lego"
+    ckpt_path_full = "/workspace/permuto_sdf/checkpoints/custom_dataset/custom_lego/200000/models"
+    print("ckpt_path_full", ckpt_path_full)
+
+    # Use NeRFJsonLoader for custom dataset, otherwise use create_dataloader
+    if args.dataset == "custom":
+        nerf_data_path = "/workspace/nerf_synthetic/lego"
+        loader = NeRFJsonLoader(nerf_data_path)
+    else:
+        loader, _ = create_dataloader(config_path, args.dataset, scan_name, low_res, args.comp_name, args.with_mask)
+
+    load_from_checkpoint(ckpt_path_full, model_sdf, model_rgb, model_bg, occupancy_grid)
+
+    extracted_mesh = extract_mesh_and_transform_to_original_tf(model_sdf, nr_points_per_dim, loader, aabb)
+
+    out_mesh_path = os.path.join(permuto_sdf_root, "results/output_permuto_sdf_meshes", args.dataset, "custom")
+    os.makedirs(out_mesh_path, exist_ok=True)
+    extracted_mesh.save_to_file(os.path.join(out_mesh_path, scan_name + ".ply"))
+
+    print(f"Mesh saved to {os.path.join(out_mesh_path, scan_name + '.ply')}")
+    return  # Exit after processing the custom checkpoint
 
 
 
