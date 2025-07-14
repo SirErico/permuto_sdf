@@ -1,3 +1,7 @@
+# custom
+*.pt
+tensorboard_logs/
+
 # wandb
 wandb/
 

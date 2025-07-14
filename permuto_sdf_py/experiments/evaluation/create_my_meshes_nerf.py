@@ -165,8 +165,8 @@ def run():
     #     extracted_mesh.save_to_file(os.path.join(out_mesh_path, scan_name+".ply") )
 
     # --- CUSTOM CHECKPOINT LOGIC ---
-    scan_name = "custom_lego"
-    ckpt_path_full = "/workspace/permuto_sdf/checkpoints/custom_dataset/custom_lego/200000/models"
+    scan_name = "custom_lego2"
+    ckpt_path_full = "/workspace/permuto_sdf/checkpoints/custom_dataset/custom_lego_test2/240000/models"
     print("ckpt_path_full", ckpt_path_full)
 
     # Use NeRFJsonLoader for custom dataset, otherwise use create_dataloader

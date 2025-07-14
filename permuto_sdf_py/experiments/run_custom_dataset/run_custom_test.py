@@ -23,6 +23,7 @@ from permuto_sdf_py.utils.permuto_sdf_utils import get_frames_cropped
 from permuto_sdf_py.train_permuto_sdf import train
 from permuto_sdf_py.train_permuto_sdf import HyperParamsPermutoSDF
 import permuto_sdf_py.paths.list_of_training_scenes as list_scenes
+from permuto_sdf_py.utils.nerf_json_loader import NeRFJsonLoader
 
 
 
@@ -89,8 +90,21 @@ def create_custom_dataset():
 
         # Extrinsics
         tf_world_cam_np = np.array(frame_data['transform_matrix'])  # cam-to-world
-        coord_transform = np.diag([1, 1, -1, 1])
-        tf_cam_world_np = np.linalg.inv(tf_world_cam_np @ coord_transform)
+
+        # Rotation matrices
+        theta_x = np.radians(90)
+        rot_x_90 = np.array([
+            [1, 0, 0, 0],
+            [0, np.cos(theta_x), -np.sin(theta_x), 0],
+            [0, np.sin(theta_x), np.cos(theta_x), 0],
+            [0, 0, 0, 1]
+        ], dtype=np.float32)
+
+        coord_transform = np.diag([1, -1, -1, 1])
+        # Apply coordinate transformation
+        tf_world_cam_np = tf_world_cam_np @ coord_transform
+        tf_cam_world_np = np.linalg.inv(tf_world_cam_np)
+        tf_cam_world_np = tf_cam_world_np @ rot_x_90 
 
         frame.tf_cam_world.from_matrix(tf_cam_world_np.astype(np.float32))
 

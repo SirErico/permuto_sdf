@@ -75,7 +75,7 @@ config_path=os.path.join( os.path.dirname( os.path.realpath(__file__) ) , '../co
 # #initialize the parameters used for training
 train_params=TrainParams.create(config_path)    
 class HyperParamsPermutoSDF:
-    s_mult=1.0 #multiplier for the scheduler. Lower values mean faster convergance at the cost of some accuracy
+    s_mult=2.0 #multiplier for the scheduler. Lower values mean faster convergance at the cost of some accuracy
     lr= 1e-3
     nr_iter_sphere_fit=4000*s_mult                      #nr iters for training with sphere SDF
     forced_variance_finish_iter=35000*s_mult            #nr iters until the SDF to density transform is sharp
