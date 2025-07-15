@@ -1,6 +1,6 @@
 # PermutoSDF
 
-
+This is a fork of the original [Permuto SDF](https://radualexandru.github.io/permuto_sdf) system. Changes made for my own testing purposes.
 ### [Project Page](https://radualexandru.github.io/permuto_sdf) | [Paper](https://arxiv.org/abs/2211.12562) | [Data](https://drive.google.com/drive/folders/1IcCtveUyQ4sHwVpdyjLt28rAdHYFHmtT?usp=share_link)
 
 [PermutoSDF: Fast Multi-View Reconstruction with Implicit Surfaces using Permutohedral Lattices](https://radualexandru.github.io/permuto_sdf)

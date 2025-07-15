@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-#this scripts shows how to run PermutoSDF on your own custom dataset
-#You would need to modify the function create_custom_dataset() to suit your needs. The current code is setup to read from the easypbr_render dataset (see README.md for the data) but you need to change it for your own data. The main points are that you need to provide an image, intrinsics and extrinsics for each your cameras. Afterwards you need to scale your scene so that your object of interest lies within the bounding sphere of radius 0.5 at the origin.
-
-#CALL with ./permuto_sdf_py/experiments/run_custom_dataset/run_custom_dataset.py --exp_info test [--no_viewer]
+# This script is used to train PermutoSDF on a custom dataset, mainly in nerf format.
 
 import torch
 import argparse
@@ -26,7 +23,6 @@ import permuto_sdf_py.paths.list_of_training_scenes as list_scenes
 from permuto_sdf_py.utils.nerf_json_loader import NeRFJsonLoader
 
 
-
 torch.manual_seed(0)
 torch.set_default_tensor_type(torch.cuda.FloatTensor)
 
@@ -44,14 +40,17 @@ args = parser.parse_args()
 with_viewer=not args.no_viewer
 
 
-#MODIFY these for your dataset!
 SCENE_SCALE=args.scene_scale
 SCENE_TRANSLATION=args.scene_translation
 IMG_SUBSAMPLE_FACTOR=args.img_subsample #subsample the image to lower resolution in case you are running on a low VRAM GPU. The higher this number, the smaller the images
-DATASET_PATH=args.dataset_path #point this to wherever you downloaded the easypbr_data (see README.md for download link)
+DATASET_PATH=args.dataset_path 
  
 def create_custom_dataset():
-    json_path = os.path.join(DATASET_PATH, "transforms_train.json")
+    """
+    Loads images and camera parameters from a NeRF/Blender-style JSON file,
+    applies coordinate transforms, and prepares frames for training.
+    """
+    json_path = os.path.join(DATASET_PATH, "transforms_train.json") # load the json file with the camera poses and intrinsics
     with open(json_path, 'r') as f:
         meta = json.load(f)
 
@@ -72,6 +71,7 @@ def create_custom_dataset():
         frame.width = img.cols
         frame.height = img.rows
 
+        # Optionally load mask
         if args.with_mask and img.channels() == 4:
             img_mask = img.get_channel(3)
             frame.mask = img_mask
