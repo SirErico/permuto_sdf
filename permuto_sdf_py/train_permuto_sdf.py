@@ -422,6 +422,7 @@ def train(args, config_path, hyperparams, train_params, loader_train, experiment
             scheduler_warmup.step() #this will call the scheduler for the decay
         if phase.iter_nr==hyperparams.iter_finish_training+1:
             print("Finished training at iter ", phase.iter_nr)
+            print("Saved model to ", checkpoint_path, experiment_name)
             is_in_training_loop=False
             break 
 

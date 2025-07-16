@@ -10,9 +10,16 @@
 # python exp_runner.py --mode validate_mesh --conf ./confs/womask.conf --case "bvms_bear" --is_continue
 #and you need to modify conf/wmask to point to the DTU dataset and the checkpoints path
 
-###CALL with 
-# ./permuto_sdf_py/experiments/evaluation/create_my_meshes.py --dataset dtu --comp_name comp_1 --res 2000  [--with_mask] 
-
+###RUN WITH
+'''
+python3 create_my_meshes_nerf.py \
+  --dataset custom \
+  --comp_name comp_3 \
+  --res 1000 \
+  --scan_name mic \
+  --ckpt_path /workspace/permuto_sdf/checkpoints/custom_dataset/custom_mic/200000/models \
+  --output_name my_mic_mesh
+'''
 
 import torch
 
@@ -47,6 +54,7 @@ import permuto_sdf_py.paths.list_of_checkpoints as list_chkpts
 import permuto_sdf_py.paths.list_of_training_scenes as list_scenes
 
 from permuto_sdf_py.utils.nerf_json_loader import NeRFJsonLoader
+import open3d as o3d
 
 
 config_file="train_permuto_sdf.cfg"
@@ -89,10 +97,13 @@ def extract_mesh_and_transform_to_original_tf(model, nr_points_per_dim, loader, 
 def run():
     #argparse
     parser = argparse.ArgumentParser(description='prepare dtu evaluation')
-    parser.add_argument('--dataset', required=True,  default="",  help="dataset which can be dtu or bmvs")
-    parser.add_argument('--comp_name', required=True,  help='Tells which computer are we using which influences the paths for finding the data')
-    parser.add_argument('--res', required=True,  help="Resolution of the mesh, usually t least 700")
+    parser.add_argument('--dataset', required=True, default="", help="dataset which can be dtu or bmvs or custom")
+    parser.add_argument('--comp_name', required=True, help='Tells which computer are we using which influences the paths for finding the data')
+    parser.add_argument('--res', required=True, help="Resolution of the mesh, usually at least 700")
     parser.add_argument('--with_mask', action='store_true', help="Set this to true in order to train with a mask")
+    parser.add_argument('--scan_name', required=True, help="Name of the scan or scene (e.g. custom_lego, mask_mic)")
+    parser.add_argument('--ckpt_path', required=True, help="Full path to the checkpoint directory (ending with /models)")
+    parser.add_argument('--output_name', required=True, help="Name for the output mesh file (without extension)")
     args = parser.parse_args()
     hyperparams=HyperParamsPermutoSDF()
 
@@ -108,11 +119,16 @@ def run():
 
     #####PARAMETERS#######
     with_viewer=False
+    print("====PARAMETERS====")
     print("args.dataset", args.dataset)
     print("args.with_mask", args.with_mask)
     print("results_path",results_path)
     print("with_viewer", with_viewer)
     print("args.res", args.res)
+    print("args.scan_name", args.scan_name)
+    print("args.ckpt_path", args.ckpt_path)
+    print("args.output_name", args.output_name)
+    print("====================")
     iter_nr_for_anneal=9999999
     cos_anneal_ratio=1.0
     low_res=False
@@ -134,13 +150,13 @@ def run():
     model_rgb.train(False)
     model_bg.train(False)
 
-    scan_name = "mask_lego1"
-    ckpt_path_full = "/workspace/permuto_sdf/checkpoints/custom_dataset/custom_lego_mask1/200000/models"
-    print("ckpt_path_full", ckpt_path_full)
+    scan_name = args.scan_name
+    ckpt_path_full = args.ckpt_path
+    output_name = args.output_name
 
     # Use NeRFJsonLoader for custom dataset, otherwise use create_dataloader
     if args.dataset == "custom":
-        nerf_data_path = "/workspace/nerf_synthetic/lego"
+        nerf_data_path = f"/workspace/nerf_synthetic/{scan_name}"
         loader = NeRFJsonLoader(nerf_data_path)
     else:
         loader, _ = create_dataloader(config_path, args.dataset, scan_name, low_res, args.comp_name, args.with_mask)
@@ -151,16 +167,26 @@ def run():
 
     out_mesh_path = os.path.join(permuto_sdf_root, "results/output_permuto_sdf_meshes", args.dataset, "custom")
     os.makedirs(out_mesh_path, exist_ok=True)
-    extracted_mesh.save_to_file(os.path.join(out_mesh_path, scan_name + ".ply"))
+    
+    mesh_output_path = os.path.join(out_mesh_path, output_name + ".ply")
+    extracted_mesh.save_to_file(mesh_output_path)
 
-    print(f"Mesh saved to {os.path.join(out_mesh_path, scan_name + '.ply')}")
-    return  # Exit after processing the custom checkpoint
+    print(f"Mesh saved to {mesh_output_path}")
 
+    # Check mesh
+    try: 
+        o3d_mesh = o3d.io.read_triangle_mesh(mesh_output_path)
+        print("Mesh loaded successfully with Open3D.")
+        print("Number of vertices:", len(o3d_mesh.vertices))
+        print("Number of triangles:", len(o3d_mesh.triangles))
+    except Exception as e:
+        print(f"Failed to load mesh with Open3D: {e}")
+
+    return
 
 
 def main():
     run()
-
 
 
 if __name__ == "__main__":

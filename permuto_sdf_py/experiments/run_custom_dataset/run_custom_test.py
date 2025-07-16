@@ -2,6 +2,15 @@
 
 # This script is used to train PermutoSDF on a custom dataset, mainly in nerf format.
 
+###RUN WITH
+'''
+python3 /workspace/permuto_sdf/permuto_sdf_py/experiments/run_custom_dataset/run_custom_test.py \
+  --dataset custom \
+  --dataset_path /workspace/nerf_synthetic/lego \
+  --exp_info lego_test1 \
+  --no_viewer
+'''
+
 import torch
 import argparse
 import os

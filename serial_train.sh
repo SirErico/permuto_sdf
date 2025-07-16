@@ -8,7 +8,7 @@ DATASET_DIR="/workspace/nerf_synthetic"
 SCRIPT_PATH="/workspace/permuto_sdf/permuto_sdf_py/experiments/run_custom_dataset/run_custom_test.py"
 BASE_CMD="python3 -u $SCRIPT_PATH --dataset custom --scene_scale 0.25 --no_viewer --with_mask"
 EXP_ROOT="mask_test"
-LOG_DIR="workspace/checkpoint_copy/logs"
+LOG_DIR="/workspace/checkpoint_copy/logs"
 mkdir -p "$LOG_DIR"
 # Loop over each folder in dataset
 for folder in "$DATASET_DIR"/*; do
