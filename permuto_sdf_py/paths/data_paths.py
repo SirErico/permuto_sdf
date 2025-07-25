@@ -4,5 +4,5 @@
 data_paths={
     "comp_1": "/media/rosu/Data/data/permuto_sdf_data",
     "comp_2": "/home/user/rosu/data/neus_data",
-    "comp_3": "/workspace/permuto_sdf_data"
+    "comp_3": "/workspace/datasets"
 }
